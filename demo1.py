@@ -19,9 +19,21 @@ data={
     "email": EMAIL,
     "password": PASSWORD
 }
-print(data,headers)
+
 resp = requests.post(URL+'/login', headers=headers, data=json.dumps(data))
 
-print(resp.status_code)
-print(resp.text)
-print(resp.json())
+if resp.status_code!=200:
+    print('Erreur authentification')
+    quit()
+
+# Récup du token & ajout dans les headers
+TOKEN=resp.json()['token']
+print(TOKEN)
+headers['Authorization']=f"Bearer {TOKEN}"
+
+# récupération Classrooms, suivant swagger & affichage des résultats (title)
+params={'page':'1', 'perPage':'30', 'pagination':'true'}
+resp = requests.get(URL+'/classrooms', headers=headers, params=params)
+classrooms = resp.json()
+for cr in classrooms['hydra:member']:
+    print(cr['title'])
