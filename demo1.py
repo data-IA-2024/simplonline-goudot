@@ -32,7 +32,7 @@ print(TOKEN)
 headers['Authorization']=f"Bearer {TOKEN}"
 
 # récupération Classrooms, suivant swagger & affichage des résultats (title)
-params={'page':'1', 'perPage':'30', 'pagination':'true'}
+params={'pagination':'false'}
 resp = requests.get(URL+'/classrooms', headers=headers, params=params)
 classrooms = resp.json()
 for cr in classrooms['hydra:member']:
