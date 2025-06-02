@@ -1,0 +1,27 @@
+import requests, dotenv, os, json
+
+dotenv.load_dotenv()
+
+EMAIL=os.environ['SIMPLON_EMAIL']
+PASSWORD=os.environ['SIMPLON_PASSWORD']
+URL="https://api.simplonline.co"
+
+
+headers = {
+    'accept': 'application/json, text/plain, */*',
+    'content-type': 'application/json;charset=UTF-8',
+    'origin': 'https://simplonline.co',
+    'referer': 'https://simplonline.co/',
+    'user-agent': 'Mozilla/5.0 (X11; Linux x86_64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/136.0.0.0 Safari/537.36',
+}
+
+data={
+    "email": EMAIL,
+    "password": PASSWORD
+}
+print(data,headers)
+resp = requests.post(URL+'/login', headers=headers, data=json.dumps(data))
+
+print(resp.status_code)
+print(resp.text)
+print(resp.json())
