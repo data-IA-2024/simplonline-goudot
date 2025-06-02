@@ -1,4 +1,4 @@
-import requests, dotenv, os, json
+import requests, dotenv, os, json, time
 
 dotenv.load_dotenv()
 
@@ -28,12 +28,33 @@ if resp.status_code!=200:
 
 # Récup du token & ajout dans les headers
 TOKEN=resp.json()['token']
-print(TOKEN)
+#print(TOKEN)
 headers['Authorization']=f"Bearer {TOKEN}"
 
+params={'pagination':'true', 'page':1, 'perPage':30}
+
+# Requète les données & les affiche ('hydra:member')
+def get_list(path):
+    print(f"-------------- {path} --------------")
+    resp = requests.get(URL+path, headers=headers, params=params)
+    docs = resp.json()
+    for doc in docs['hydra:member']:
+        print(doc['@id'], doc['title'] if 'title' in doc else '---')
+    time.sleep(1)
+
 # récupération Classrooms, suivant swagger & affichage des résultats (title)
-params={'pagination':'false'}
-resp = requests.get(URL+'/classrooms', headers=headers, params=params)
-classrooms = resp.json()
-for cr in classrooms['hydra:member']:
-    print(cr['title'])
+get_list('/classrooms')
+
+# Les briefs
+get_list('/briefs')
+
+# Les framework
+get_list('/frameworks')
+
+get_list('/factories')
+get_list('/follow_ups')
+#get_list('/group_corrections')
+get_list('/missions')
+get_list('/professional_situations')
+get_list('/skills')
+get_list('/skill_levels')
