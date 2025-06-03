@@ -1,11 +1,23 @@
 import requests, dotenv, os, json, time
+from elasticsearch import Elasticsearch
 
 dotenv.load_dotenv()
+
+# Suppression des messages de warning à propos du certificat...
+import urllib3
+urllib3.disable_warnings(urllib3.exceptions.InsecureRequestWarning)
 
 EMAIL=os.environ['SIMPLON_EMAIL']
 PASSWORD=os.environ['SIMPLON_PASSWORD']
 URL="https://api.simplonline.co"
 
+client = Elasticsearch(
+    "https://localhost:9200",
+    basic_auth=("elastic", os.environ['ELASTIC_PASSWORD']),
+    verify_certs=False
+)
+response = client.info()
+print(response)
 
 headers = {
     'accept': 'application/json, text/plain, */*',
@@ -31,30 +43,25 @@ TOKEN=resp.json()['token']
 #print(TOKEN)
 headers['Authorization']=f"Bearer {TOKEN}"
 
-params={'pagination':'true', 'page':1, 'perPage':30}
+params={'pagination':'true', 'page':5, 'perPage':100}
 
 # Requète les données & les affiche ('hydra:member')
-def get_list(path):
-    print(f"-------------- {path} --------------")
+def get_list(path, index, page=1):
+    params['page']=page
+    print(f"-------------- {path} -> {index}, page {page} --------------")
     resp = requests.get(URL+path, headers=headers, params=params)
     docs = resp.json()
     for doc in docs['hydra:member']:
         print(doc['@id'], doc['title'] if 'title' in doc else '---')
+        client.index(index=index, id=doc['@id'], document=doc)
     time.sleep(1)
 
 # récupération Classrooms, suivant swagger & affichage des résultats (title)
-get_list('/classrooms')
+#get_list('/classrooms')
 
 # Les briefs
-get_list('/briefs')
+for page in range(50,100):
+    get_list('/briefs', 'p4-ego-brief', page=page)
 
-# Les framework
-get_list('/frameworks')
+get_list('/frameworks', 'p4-ego-framework')
 
-get_list('/factories')
-get_list('/follow_ups')
-#get_list('/group_corrections')
-get_list('/missions')
-get_list('/professional_situations')
-get_list('/skills')
-get_list('/skill_levels')
