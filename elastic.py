@@ -4,6 +4,10 @@ import requests, dotenv, os, json, time
 
 dotenv.load_dotenv()
 
+# Suppression des messages de warning à propos du certificat...
+import urllib3
+urllib3.disable_warnings(urllib3.exceptions.InsecureRequestWarning)
+
 client = Elasticsearch(
     "https://localhost:9200",
     basic_auth=("elastic", os.environ['ELASTIC_PASSWORD']),
