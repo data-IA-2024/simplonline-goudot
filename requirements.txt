@@ -2,3 +2,8 @@ python-dotenv
 requests
 helium
 elasticsearch
+
+ecs-logging
+
+fastapi[standard]
+uvicorn

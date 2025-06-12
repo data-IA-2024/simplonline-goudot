@@ -17,6 +17,11 @@ Extraction de données de Simplonline.co
  python demo1.py
 ```
 
+## Execution FastAPI
+````bash
+ fastapi dev main.py
+```
+
 ## Scrapping 'dur'
 ```bash
  source venv/bin/activate
@@ -34,4 +39,20 @@ Développer une interface OCR avec Azure
 Projet OCR - Analyse de Factures et Clustering
 Développement d'une Application de Gestion de courses avec LocalStorage
 Veille "Cloud"
+```
+```json
+GET /p4-egobriefs/_search
+{
+  "query": {
+    "match": {
+      "title": {
+        "query": "champions"
+      }
+    }
+  }
+}
+```
+
+```bash
+ uvicorn sampleAPI:app --host 0.0.0.0 --port 8000 --reload
 ```
