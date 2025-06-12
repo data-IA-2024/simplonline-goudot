@@ -24,14 +24,14 @@ SECRET=os.environ['SECRET']
 
 @app.middleware("http")
 async def check_token(request: Request, call_next):
-    print(f"check {request.query_params=}")
+    #print(f"check {request.query_params=}")
     if request.query_params.get('token') == SECRET:
         response = await call_next(request)
         return response
     else :
         return JSONResponse(
             status_code=418,
-            content={"message": f"Oops!  did something. There goes a rainbow..."},
+            content={"message": f"Oops!  token inconnu"},
         )
         #raise HTTPException(status_code=400, detail="Item not found")
 
@@ -45,7 +45,7 @@ async def add_process_time_header2(request: Request, call_next):
     response.headers["X-Process-Time2"] = str(process_time)
 
     log_entry = {
-        "timestamp": datetime.now(),
+        "timestamp": datetime.utcnow(),
         "method": request.method,
         "path": request.url.path,
         "query_params": dict(request.query_params),
