@@ -2,11 +2,24 @@ from typing import Union
 from fastapi import FastAPI, Request, HTTPException
 from fastapi.responses import JSONResponse
 from elasticsearch import Elasticsearch
-import time, dotenv, os
+import time, dotenv, os, logging
 from datetime import datetime
 
 dotenv.load_dotenv()
 
+logger = logging.getLogger(__name__)
+LOG=os.environ['LOG']
+logging.basicConfig(
+    filename='example.log',
+    format='%(levelname)s: %(asctime)s %(message)s',
+    level=getattr(logging, LOG, None)
+)
+'''
+logger.debug('Restart FastAPI...')
+logger.info('So should this')
+logger.warning('And this, too')
+logger.error('And non-ASCII stuff, too, like Øresund and Malmö')
+'''
 # Suppression des messages de warning à propos du certificat...
 import urllib3
 urllib3.disable_warnings(urllib3.exceptions.InsecureRequestWarning)
@@ -16,11 +29,12 @@ es = Elasticsearch(
     basic_auth=("elastic", os.environ['ELASTIC_PASSWORD']),
     verify_certs=False
 )
-print(es.info())
+logger.debug(es.info())
 
 app = FastAPI()
 
 SECRET=os.environ['SECRET']
+logger.info(f"token={SECRET}")
 
 @app.middleware("http")
 async def check_token(request: Request, call_next):
